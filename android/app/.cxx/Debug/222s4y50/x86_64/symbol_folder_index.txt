@@ -1,0 +1,1 @@
+C:\wamp64\www\pelevo\frontend\build\app\intermediates\cxx\Debug\222s4y50\obj\x86_64

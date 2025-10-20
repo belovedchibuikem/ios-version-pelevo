@@ -1,0 +1,43 @@
+workflows:
+  ios-working:
+    name: iOS Working Build (No Firebase Messaging)
+    max_build_duration: 45
+    environment:
+      flutter: "3.6.0"
+      xcode: latest
+      cocoapods: default
+    scripts:
+      - name: Clean Flutter
+        script: |
+          flutter clean
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+      - name: Flutter precache
+        script: |
+          flutter precache --ios
+      - name: Install CocoaPods
+        script: |
+          cd ios
+          pod install --repo-update
+          cd ..
+      - name: Build iOS Device
+        script: |
+          flutter build ios --release --no-codesign
+      - name: Build iOS Simulator
+        script: |
+          flutter build ios --simulator --debug
+      - name: Launch Simulator and Install App
+        script: |
+          # Start iOS Simulator
+          xcrun simctl boot "iPhone 15 Pro" || true
+          xcrun simctl install "iPhone 15 Pro" build/ios/iphonesimulator/Runner.app
+          xcrun simctl launch "iPhone 15 Pro" com.podemeraldsltd.pelevo
+      - name: Take Simulator Screenshots
+        script: |
+          # Take screenshots of the app running
+          xcrun simctl io "iPhone 15 Pro" screenshot simulator_screenshot.png
+    artifacts:
+      - build/ios/Release-iphoneos/Runner.app
+      - build/ios/iphonesimulator/Runner.app
+      - simulator_screenshot.png

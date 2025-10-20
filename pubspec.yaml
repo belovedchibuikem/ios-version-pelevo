@@ -1,0 +1,90 @@
+name: pelevo_podcast
+description: A new Flutter project.
+version: 4.0.2+12
+environment: 
+  sdk: ^3.6.0
+dependencies: 
+  sentry_flutter: ^9.6.0
+  flutter: 
+    sdk: flutter
+  cached_network_image: ^3.3.1
+  flutter_svg: ^2.0.9
+  shared_preferences: ^2.2.2
+  connectivity_plus: ^5.0.2
+  dio: ^5.4.0
+  fluttertoast: ^8.2.4
+  sizer: ^2.0.15
+  fl_chart: ^0.65.0
+  google_fonts: ^6.1.0
+  flutter_dotenv: ^5.2.1
+  permission_handler: ^11.3.1
+  web: any
+  provider: any
+  audioplayers: any
+  http: ^1.1.0
+  flutter_secure_storage: ^9.0.0
+  url_launcher: ^6.2.5
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
+  path_provider: ^2.0.15
+  share_plus: ^7.2.1
+  image_picker: ^1.0.7
+  # file_picker: 8.0.0+1  # Removed - handled by image_picker
+  # firebase_core: ^2.24.2  # Not used in app
+  # firebase_messaging: ^14.7.4  # Not used in app
+  flutter_web_auth_2: ^4.1.0
+  intl: ^0.19.0
+  just_audio: ^0.9.36
+  audio_session: ^0.1.18
+  wakelock_plus: ^1.1.4
+  shimmer: ^3.0.0
+  
+  # Database and Local Storage
+  sqflite: ^2.3.0
+  sqflite_common_ffi: ^2.3.2
+  
+  # Background Processing
+  workmanager: ^0.7.0
+  
+  # Notification Controls
+  flutter_local_notifications: ^17.0.0
+  
+  # Media Session for System Controls
+  audio_service: ^0.18.15
+ 
+  # In-App Purchase Dependencies
+  in_app_purchase: ^3.2.3  # Google Play and Apple App Store
+  
+  # App Update Dependencies
+  package_info_plus: ^8.0.0
+  upgrader: ^11.1.0
+
+ 
+dev_dependencies: 
+  sentry_dart_plugin: ^3.1.1
+  flutter_test: 
+    sdk: flutter
+  flutter_lints: ^5.0.0
+  flutter_launcher_icons: "^0.14.3"
+
+# Override problematic plugin versions (if needed)
+# dependency_overrides:
+#   file_picker: 8.0.0+1
+
+flutter_launcher_icons:
+  android: "launcher_icon"
+  ios: true
+  image_path: "assets/icon/icon.png"
+
+flutter: 
+  uses-material-design: true
+  assets: 
+    - assets/
+    - assets/images/
+    - assets/icon/
+    - .env
+sentry:
+  upload_debug_symbols: true
+  upload_source_maps: true
+  project: flutter
+  org: belovedtech

@@ -1,0 +1,2 @@
+C:/Users/USER/Downloads/pelevo_podcast/android/app/.cxx/Debug/3a43m5m4/x86_64/CMakeFiles/edit_cache.dir
+C:/Users/USER/Downloads/pelevo_podcast/android/app/.cxx/Debug/3a43m5m4/x86_64/CMakeFiles/rebuild_cache.dir

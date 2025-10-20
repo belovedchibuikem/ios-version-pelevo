@@ -1,0 +1,30 @@
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+    
+    tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).configureEach {
+        kotlinOptions {
+            freeCompilerArgs += [
+                '-Xskip-metadata-version-check',
+                '-Xallow-unstable-dependencies',
+                '-Xskip-prerelease-check'
+            ]
+        }
+    }
+}
+
+rootProject.buildDir = '../build'
+subprojects {
+    project.buildDir = "${rootProject.buildDir}/${project.name}"
+    
+}
+subprojects {
+    project.evaluationDependsOn(':app')
+    
+}
+
+tasks.register("clean", Delete) {
+    delete rootProject.buildDir
+}

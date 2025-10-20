@@ -1,0 +1,2 @@
+C:/Users/USER/Downloads/pelevo_podcast/android/app/.cxx/RelWithDebInfo/3p162b2m/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/USER/Downloads/pelevo_podcast/android/app/.cxx/RelWithDebInfo/3p162b2m/armeabi-v7a/CMakeFiles/rebuild_cache.dir

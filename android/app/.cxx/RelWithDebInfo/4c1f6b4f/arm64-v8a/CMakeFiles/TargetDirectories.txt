@@ -1,0 +1,2 @@
+C:/wamp64/www/pelevo/frontend/android/app/.cxx/RelWithDebInfo/4c1f6b4f/arm64-v8a/CMakeFiles/edit_cache.dir
+C:/wamp64/www/pelevo/frontend/android/app/.cxx/RelWithDebInfo/4c1f6b4f/arm64-v8a/CMakeFiles/rebuild_cache.dir
