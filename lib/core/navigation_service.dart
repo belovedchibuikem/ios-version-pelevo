@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/routes/app_routes.dart';
+import '../core/services/unified_auth_service.dart';
 
 class NavigationService {
   static final NavigationService _instance = NavigationService._internal();
@@ -15,6 +16,7 @@ class NavigationService {
   final List<String> _navigationStack = [];
   String? _initialRoute;
   String? _currentSourceRoute; // Track the source route for earning validation
+  final UnifiedAuthService _auth = UnifiedAuthService();
 
   /// Set the initial route when the app starts
   void setInitialRoute(String route) {
@@ -38,6 +40,19 @@ class NavigationService {
   /// Navigate to a specific route and track it
   Future<T?> navigateTo<T extends Object?>(String routeName,
       {Object? arguments}) {
+    // Guest restriction: allow only home-screen
+    _auth.isGuestMode().then((isGuest) {
+      if (isGuest && routeName != AppRoutes.homeScreen &&
+          routeName != AppRoutes.podcastPlayer &&
+          routeName != AppRoutes.podcastDetailScreen &&
+          routeName != AppRoutes.categoryPodcasts &&
+          routeName != AppRoutes.trendingPodcastsScreen &&
+          routeName != AppRoutes.recommendationsScreen &&
+          routeName != AppRoutes.categoriesListScreen) {
+        navigatorKey.currentState?.pushReplacementNamed(AppRoutes.authenticationScreen);
+        return null;
+      }
+    });
     if (routeName.isEmpty) {
       debugPrint('NavigationService: Route name is empty');
       return Future.value(null);
@@ -81,6 +96,18 @@ class NavigationService {
   Future<T?> navigateAndReplace<T extends Object?, TO extends Object?>(
       String routeName,
       {Object? arguments}) {
+    _auth.isGuestMode().then((isGuest) {
+      if (isGuest && routeName != AppRoutes.homeScreen &&
+          routeName != AppRoutes.podcastPlayer &&
+          routeName != AppRoutes.podcastDetailScreen &&
+          routeName != AppRoutes.categoryPodcasts &&
+          routeName != AppRoutes.trendingPodcastsScreen &&
+          routeName != AppRoutes.recommendationsScreen &&
+          routeName != AppRoutes.categoriesListScreen) {
+        navigatorKey.currentState?.pushReplacementNamed(AppRoutes.authenticationScreen);
+        return null;
+      }
+    });
     trackNavigation(routeName);
     final navigator = navigatorKey.currentState;
     if (navigator == null) {
@@ -234,6 +261,12 @@ class NavigationService {
 
   /// Navigate to specific tab within existing navigation (preserves data)
   Future<void> navigateToTab(int tabIndex) {
+    _auth.isGuestMode().then((isGuest) {
+      if (isGuest && tabIndex != 0) {
+        navigatorKey.currentState?.pushReplacementNamed(AppRoutes.authenticationScreen);
+        return;
+      }
+    });
     // If we have a registered callback, use it to switch tabs
     if (_onTabSelectedCallback != null) {
       debugPrint(

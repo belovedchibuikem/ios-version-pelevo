@@ -6,6 +6,7 @@ class StorageService {
   static const String _tokenKey = 'auth_token';
   static const String _userKey = 'user_data';
   static const String _expiryKey = 'token_expiry';
+  static const String _guestKey = 'guest_session';
 
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -100,6 +101,29 @@ class StorageService {
     debugPrint('💾 STORAGE SERVICE: Clearing all secure storage');
     await _storage.deleteAll();
     debugPrint('💾 STORAGE SERVICE: All storage cleared successfully');
+  }
+
+  /// Guest mode helpers
+  Future<void> setGuestMode(bool isGuest) async {
+    try {
+      debugPrint('💾 STORAGE SERVICE: Setting guest mode to: $isGuest');
+      await _storage.write(key: _guestKey, value: isGuest ? 'true' : 'false');
+    } catch (e) {
+      debugPrint('💾 STORAGE SERVICE ERROR: Failed to set guest mode: $e');
+      rethrow;
+    }
+  }
+
+  Future<bool> isGuestMode() async {
+    try {
+      final value = await _storage.read(key: _guestKey);
+      final isGuest = value == 'true';
+      debugPrint('💾 STORAGE SERVICE: isGuestMode -> $isGuest');
+      return isGuest;
+    } catch (e) {
+      debugPrint('💾 STORAGE SERVICE ERROR: Failed to read guest mode: $e');
+      return false;
+    }
   }
 
   // Test method to verify storage is working

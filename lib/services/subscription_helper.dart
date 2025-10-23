@@ -6,6 +6,8 @@ import '../core/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import '../providers/subscription_provider.dart';
 import 'subscriber_count_service.dart';
+import '../core/services/unified_auth_service.dart';
+import '../core/routes/app_routes.dart';
 
 /// Standardized handler for subscribe/unsubscribe actions.
 ///
@@ -19,6 +21,14 @@ Future<void> handleSubscribeAction({
   required bool isCurrentlySubscribed,
   required Function(bool) onStateChanged,
 }) async {
+  // Redirect guests to login instead of calling subscription APIs
+  final auth = UnifiedAuthService();
+  final isGuest = await auth.isGuestMode();
+  if (isGuest) {
+    Navigator.pushReplacementNamed(context, AppRoutes.authenticationScreen);
+    return;
+  }
+
   final apiService = LibraryApiService();
   final subscriptionProvider =
       Provider.of<SubscriptionProvider>(context, listen: false);

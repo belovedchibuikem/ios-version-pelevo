@@ -1,0 +1,27 @@
+name: iOS CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+      
+      - name: Set up Xcode
+        run: sudo xcode-select -switch /Applications/Xcode.app/Contents/Developer
+      
+      - name: Install Dependencies
+        run: pod install --repo-update  # For projects using CocoaPods
+      
+      - name: Build and Test
+        run: xcodebuild -workspace YourProject.xcworkspace \  
+                       -scheme YourScheme \  
+                       -destination 'platform=iOS Simulator,name=iPhone 14' \  
+                       clean test

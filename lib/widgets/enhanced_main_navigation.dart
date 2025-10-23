@@ -10,6 +10,7 @@ import '../providers/profile_provider.dart';
 import '../core/app_export.dart';
 import '../core/navigation_service.dart';
 import 'common_bottom_navigation_widget.dart';
+import '../core/services/unified_auth_service.dart';
 
 /// Enhanced main navigation with PageView and state preservation
 class EnhancedMainNavigation extends StatefulWidget {
@@ -23,6 +24,7 @@ class _EnhancedMainNavigationState extends State<EnhancedMainNavigation>
     with AutomaticKeepAliveClientMixin {
   final PageController _pageController = PageController();
   int _currentIndex = 0;
+  final UnifiedAuthService _auth = UnifiedAuthService();
 
   @override
   bool get wantKeepAlive => true;
@@ -46,6 +48,14 @@ class _EnhancedMainNavigationState extends State<EnhancedMainNavigation>
     if (currentRoute != null) {
       final routeName = currentRoute.settings.name;
       int targetIndex = 0; // Default to home tab
+
+      // If a guest opened a non-home route that maps to a tab, redirect to login
+      _auth.isGuestMode().then((isGuest) {
+        if (isGuest && routeName != null && routeName != AppRoutes.homeScreen) {
+          Navigator.pushReplacementNamed(context, AppRoutes.authenticationScreen);
+          return;
+        }
+      });
 
       switch (routeName) {
         case '/home-screen':
@@ -93,12 +103,19 @@ class _EnhancedMainNavigationState extends State<EnhancedMainNavigation>
   /// Initialize all providers
   Future<void> _initializeProviders() async {
     try {
-      // Initialize providers in parallel
-      await Future.wait([
-        Provider.of<HomeProvider>(context, listen: false).initialize(),
-        Provider.of<LibraryProvider>(context, listen: false).initialize(),
-        Provider.of<ProfileProvider>(context, listen: false).initialize(),
-      ]);
+      final isGuest = await _auth.isGuestMode();
+      if (isGuest) {
+        // Guests: initialize only home-related data; skip auth-required providers
+        await Provider.of<HomeProvider>(context, listen: false).initialize();
+        debugPrint('✅ Initialized HomeProvider for guest session');
+      } else {
+        // Authenticated users: initialize all providers in parallel
+        await Future.wait([
+          Provider.of<HomeProvider>(context, listen: false).initialize(),
+          Provider.of<LibraryProvider>(context, listen: false).initialize(),
+          Provider.of<ProfileProvider>(context, listen: false).initialize(),
+        ]);
+      }
       debugPrint('✅ All providers initialized successfully');
     } catch (e) {
       debugPrint('❌ Error initializing providers: $e');
@@ -107,18 +124,25 @@ class _EnhancedMainNavigationState extends State<EnhancedMainNavigation>
 
   /// Handle tab selection
   void _onTabSelected(int index) {
-    if (_currentIndex != index) {
-      setState(() {
-        _currentIndex = index;
-      });
+    // If guest, only allow Home (index 0)
+    _auth.isGuestMode().then((isGuest) {
+      if (isGuest && index != 0) {
+        Navigator.pushReplacementNamed(context, AppRoutes.authenticationScreen);
+        return;
+      }
 
-      // Animate to the selected page
-      _pageController.animateToPage(
-        index,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
+      if (_currentIndex != index) {
+        setState(() {
+          _currentIndex = index;
+        });
+
+        _pageController.animateToPage(
+          index,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeInOut,
+        );
+      }
+    });
   }
 
   /// Handle page changes from swipe gestures

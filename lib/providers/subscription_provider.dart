@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import '../core/config/api_config.dart';
 import '../core/services/auth_service.dart';
+import '../core/services/unified_auth_service.dart';
 import '../services/library_api_service.dart';
 
 class SubscriptionProvider extends ChangeNotifier {
@@ -66,6 +67,18 @@ class SubscriptionProvider extends ChangeNotifier {
     errorMessage = null;
 
     try {
+      // Skip backend call in guest mode
+      final unifiedAuth = UnifiedAuthService();
+      final isGuest = await unifiedAuth.isGuestMode();
+      if (isGuest) {
+        if (_disposed) return;
+        setSubscriptions({});
+        errorMessage = null;
+        isLoading = false;
+        _safeNotifyListeners();
+        return;
+      }
+
       final apiService = LibraryApiService();
       final response = await apiService.getSubscribedPodcastIds();
 

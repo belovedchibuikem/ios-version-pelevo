@@ -251,4 +251,8 @@ class UnifiedAuthService {
     _lastTokenCheck = null;
     debugPrint('🔐 UnifiedAuthService: Token cache invalidated');
   }
+
+  /// Guest mode helpers (proxied to StorageService)
+  Future<void> setGuestMode(bool isGuest) => _storageService.setGuestMode(isGuest);
+  Future<bool> isGuestMode() => _storageService.isGuestMode();
 }

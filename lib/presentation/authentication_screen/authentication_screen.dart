@@ -53,6 +53,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
   late Animation<double> _fadeAnimation;
 
   final AuthService _authService = AuthService();
+  final UnifiedAuthService _unifiedAuthService = UnifiedAuthService();
 
   bool _isPasswordFocused = false;
   bool _isConfirmPasswordFocused = false;
@@ -264,6 +265,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
           password: password,
         );
 
+        // Ensure guest mode is disabled after a real login
+        await _unifiedAuthService.setGuestMode(false);
+
         // Sync subscriptions after login
         await Provider.of<SubscriptionProvider>(context, listen: false)
             .fetchAndSetSubscriptionsFromBackend();
@@ -278,6 +282,9 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
           password: password,
           passwordConfirmation: _confirmPasswordController.text,
         );
+
+        // Ensure guest mode is disabled after a successful registration
+        await _unifiedAuthService.setGuestMode(false);
 
         // Sync subscriptions after registration
         await Provider.of<SubscriptionProvider>(context, listen: false)
@@ -320,6 +327,21 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
           _isLoading = false;
         });
       }
+    }
+  }
+
+  Future<void> _continueAsGuest() async {
+    try {
+      setState(() => _isLoading = true);
+      await _unifiedAuthService.setGuestMode(true);
+      HapticFeedback.selectionClick();
+      if (mounted) {
+        Navigator.pushReplacementNamed(context, AppRoutes.homeScreen);
+      }
+    } catch (e) {
+      _showErrorSnackBar('Could not start guest session. Please try again.');
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -616,6 +638,29 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                         ForgotPasswordWidget(
                           onPressed: _handleForgotPassword,
                         ),
+                        const SizedBox(height: 8),
+                        Center(
+                          child: TextButton.icon(
+                            onPressed: _isLoading ? null : _continueAsGuest,
+                            style: TextButton.styleFrom(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                            ),
+                            icon: Icon(
+                              Icons.person_outline,
+                              color: AppTheme.lightTheme.primaryColor,
+                              size: 20,
+                            ),
+                            label: Text(
+                              'Continue as Guest',
+                              style: AppTheme.lightTheme.textTheme.bodyMedium?.copyWith(
+                                color: AppTheme.lightTheme.primaryColor,
+                                fontWeight: FontWeight.w600,
+                                decoration: TextDecoration.underline,
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
 
                       const SizedBox(height: 32),
@@ -626,8 +671,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                       //   onError: (message) => _showErrorSnackBar(message),
                       //   isLoading: _isLoading,
                       // ),
-
-                      const SizedBox(height: 24),
                     ],
                   ),
                 ),

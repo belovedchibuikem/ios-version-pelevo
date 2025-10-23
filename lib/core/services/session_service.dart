@@ -67,6 +67,13 @@ class SessionService {
             '🔐 SESSION SERVICE: User is authenticated, redirecting to home');
         return AppRoutes.homeScreen;
       } else {
+        // Allow guests to go straight to home (limited access)
+        final isGuest = await _authService.isGuestMode();
+        if (isGuest) {
+          debugPrint('🔐 SESSION SERVICE: Guest mode active, redirecting to home');
+          return AppRoutes.homeScreen;
+        }
+
         // No valid session, then evaluate first launch / onboarding
         final isFirstLaunch = await FirstLaunchService.isFirstLaunch();
         debugPrint('🔐 SESSION SERVICE: Is first launch: $isFirstLaunch');

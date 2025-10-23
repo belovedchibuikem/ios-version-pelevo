@@ -2,12 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:sizer/sizer.dart';
 
 import '../core/app_export.dart';
+import '../core/services/unified_auth_service.dart';
 
 // lib/widgets/common_bottom_navigation_widget.dart
 
 class CommonBottomNavigationWidget extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTabSelected;
+  static final UnifiedAuthService _auth = UnifiedAuthService();
 
   const CommonBottomNavigationWidget({
     super.key,
@@ -34,21 +36,32 @@ class CommonBottomNavigationWidget extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(0, 'home', 'Home'),
-            _buildNavItem(1, 'monetization_on', 'Earn'),
-            _buildNavItem(2, 'library_books', 'Library'),
-            _buildNavItem(3, 'account_balance_wallet', 'Wallet'),
-            _buildNavItem(4, 'person', 'Profile'),
+            _buildNavItem(context, 0, 'home', 'Home'),
+            _buildNavItem(context, 1, 'monetization_on', 'Earn'),
+            _buildNavItem(context, 2, 'library_books', 'Library'),
+            _buildNavItem(context, 3, 'account_balance_wallet', 'Wallet'),
+            _buildNavItem(context, 4, 'person', 'Profile'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildNavItem(int index, String iconName, String label) {
+  Widget _buildNavItem(BuildContext context, int index, String iconName, String label) {
     final bool isSelected = currentIndex == index;
     return GestureDetector(
-      onTap: () => onTabSelected(index),
+      onTap: () async {
+        final isGuest = await _auth.isGuestMode();
+        if (isGuest && index != 0) {
+          // Redirect guests to login when tapping non-home tabs
+          if (context.mounted) {
+            Navigator.pushReplacementNamed(
+                context, AppRoutes.authenticationScreen);
+          }
+          return;
+        }
+        onTabSelected(index);
+      },
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 0.3.h),
         child: Column(
