@@ -9,6 +9,10 @@ class MemoryManager {
   /// Get the system page size
   static Future<int> getPageSize() async {
     try {
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        // iOS: use default 4KB and avoid MethodChannel to prevent MissingPluginException
+        return 4096;
+      }
       final int pageSize = await _channel.invokeMethod('getPageSize');
       return pageSize;
     } catch (e) {
@@ -20,6 +24,9 @@ class MemoryManager {
   /// Optimize memory for 16KB page size
   static Future<bool> optimizeMemory() async {
     try {
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        return false;
+      }
       final bool success = await _channel.invokeMethod('optimizeMemory');
       return success;
     } catch (e) {
@@ -31,6 +38,9 @@ class MemoryManager {
   /// Check if 16KB page size is supported
   static Future<bool> is16KBPageSizeSupported() async {
     try {
+      if (defaultTargetPlatform == TargetPlatform.iOS) {
+        return false;
+      }
       final bool supported =
           await _channel.invokeMethod('is16KBPageSizeSupported');
       return supported;
