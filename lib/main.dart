@@ -70,21 +70,16 @@ Future<void> _runApp() async {
     debugPrint('🏗️ Release mode: $kReleaseMode');
 
     // Initialize memory optimization for 16KB page size support
-    // Defer until after first frame to avoid blocking startup/splash
-    WidgetsBinding.instance.addPostFrameCallback((_) async {
-      try {
-        await MemoryManager.initializeMemoryOptimization();
-        await DebugInfo.log16KBPageCompliance();
-      } catch (e) {
-        debugPrint('⚠️ Warning: Memory optimization initialization failed: $e');
-        debugPrint('App will continue without memory optimization');
-      }
-    });
+    try {
+      await MemoryManager.initializeMemoryOptimization();
+      await DebugInfo.log16KBPageCompliance();
+    } catch (e) {
+      debugPrint('⚠️ Warning: Memory optimization initialization failed: $e');
+      debugPrint('App will continue without memory optimization');
+    }
 
     // Initialize Hive for local storage with retry logic
-    // Do not block UI; start then proceed to runApp immediately.
-    // Errors are handled internally and won't crash startup.
-    unawaited(_initializeHiveWithRetry());
+    await _initializeHiveWithRetry();
 
     // For in_app_purchase 3.x+, pending purchases are enabled by default on Android.
     // For iOS, you need to enable it explicitly.

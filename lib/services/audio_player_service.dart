@@ -368,7 +368,7 @@ class AudioPlayerService {
             // Remote URL - use setUrl
             debugPrint('🔊 Loading remote URL: ${episode.audioUrl}');
             await _audioPlayer.setUrl(episode.audioUrl!, headers: {
-              'User-Agent': 'Pelevo/4.0.2 (Flutter; iOS; Android)',
+              'User-Agent': 'Pelevo/4.0.3 (Flutter; iOS; Android)',
             });
             debugPrint('✅ Remote URL set successfully');
           } else {
