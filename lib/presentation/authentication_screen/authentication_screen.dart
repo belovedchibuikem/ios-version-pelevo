@@ -19,7 +19,7 @@ import './widgets/password_rules_widget.dart';
 import './widgets/terms_checkbox_widget.dart';
 import '../../providers/subscription_provider.dart';
 
-class AuthenticationScreen extends StatefulWidget {
+class AuthenticatinScreen extends StatefulWidget {
   const AuthenticationScreen({super.key});
 
   @override
